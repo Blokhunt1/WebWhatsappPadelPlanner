@@ -1,0 +1,14 @@
+node_modules/
+venv/
+.venv/
+__pycache__/
+whatsapp_auth/
+whatsapp_profile/
+.wwebjs_cache/
+whatsapp_data.json
+*.exe
+build/
+dist/
+pyinstaller_temp/
+.git/
+.vscode/

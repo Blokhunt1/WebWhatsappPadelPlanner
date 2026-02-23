@@ -8,7 +8,10 @@ function getBrowserPath() {
     const paths = [
         'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
         'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
-        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
+        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+        '/usr/bin/google-chrome',
+        '/usr/bin/chromium',
+        '/usr/bin/chromium-browser'
     ];
     for (const p of paths) {
         if (fs.existsSync(p)) return p;
@@ -58,10 +61,17 @@ client.on('message_create', async msg => {
         msg.reply(`🎾 Generating Peakz Padel options for the next ${days} days... This may take a minute 🎾`);
 
         // Find python executable assuming common structures
-        let executable = 'python';
-        const venvPath = path.join(__dirname, '..', 'venv', 'Scripts', 'python.exe');
-        if (fs.existsSync(venvPath)) {
-            executable = venvPath;
+        let executable = 'python3'; // Default on Linux/Docker
+        const venvPathWin = path.join(__dirname, '..', 'venv', 'Scripts', 'python.exe');
+        const venvPathLin = path.join(__dirname, '..', 'venv', 'bin', 'python');
+
+        if (fs.existsSync(venvPathWin)) {
+            executable = venvPathWin;
+        } else if (fs.existsSync(venvPathLin)) {
+            executable = venvPathLin;
+        } else {
+            // Fallback for Windows if not in venv
+            try { if (fs.existsSync('C:\\Python313\\python.exe')) executable = 'python'; } catch (e) { }
         }
 
         const scraperScript = path.join(__dirname, 'scraper.py');
