@@ -40,7 +40,11 @@ client.on('ready', async () => {
     console.log('Listening for "?PADEL" or "?PADEL [days]" commands in any chat...\n');
 });
 
-client.on('message', async msg => {
+client.on('message_create', async msg => {
+    // Ignore if it's an automated reply from the bot itself (to prevent infinite loops)
+    if (msg.fromMe && msg.body.includes('Generating Peakz Padel options')) return;
+    if (msg.fromMe && msg.pollName) return;
+
     const text = msg.body.trim().toUpperCase();
 
     if (text.startsWith('?PADEL')) {
