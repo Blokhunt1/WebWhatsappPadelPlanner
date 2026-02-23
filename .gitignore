@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+PadelScraper.exe
+pyinstaller_temp/
+dist/
+build/
+*.spec
+.vscode/
