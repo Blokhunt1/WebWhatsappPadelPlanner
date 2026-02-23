@@ -1,4 +1,4 @@
-venv/
+.venv/
 __pycache__/
 *.pyc
 *.pyo
@@ -9,3 +9,11 @@ dist/
 build/
 *.spec
 .vscode/
+
+# Node.js / WhatsApp
+node_modules/
+whatsapp_auth/
+whatsapp_profile/
+whatsapp_data.json
+test.js
+test2.js
