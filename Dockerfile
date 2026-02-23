@@ -28,5 +28,8 @@ RUN npm install
 # Copy all source code
 COPY src/ ./
 
+# Expose the Web UI port
+EXPOSE 4200
+
 # Run the Node.js bot directly
 CMD ["node", "bot.js"]

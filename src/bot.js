@@ -1,8 +1,47 @@
 const fs = require('fs');
 const { exec } = require('child_process');
-const qrcode = require('qrcode-terminal');
+const qrcodeTerminal = require('qrcode-terminal');
+const qrcode = require('qrcode');
+const express = require('express');
 const { Client, LocalAuth, Poll } = require('whatsapp-web.js');
 const path = require('path');
+
+// Setup Webserver for Remote QR Authentication
+const app = express();
+const port = 4200;
+let currentQR = '';
+let isAuthenticated = false;
+
+app.get('/', async (req, res) => {
+    if (isAuthenticated) {
+        res.send('<html><body style="font-family: sans-serif; text-align: center; margin-top: 50px;"><h2>✅ Bot is Authenticated and Running!</h2><p>You can close this page.</p></body></html>');
+    } else if (currentQR) {
+        try {
+            const qrImageBase64 = await qrcode.toDataURL(currentQR);
+            res.send(`
+                <html>
+                <body style="font-family: sans-serif; text-align: center; margin-top: 50px;">
+                    <h2>WhatsApp Bot Authentication Required</h2>
+                    <p>Scan this QR code with your WhatsApp app to link the bot.</p>
+                    <img src="${qrImageBase64}" style="width: 300px; height: 300px;" alt="QR Code" />
+                    <script>
+                        // Auto-refresh the page every 5 seconds to check if status changed
+                        setTimeout(() => location.reload(), 5000);
+                    </script>
+                </body>
+                </html>
+            `);
+        } catch (err) {
+            res.status(500).send('Error generating QR code image');
+        }
+    } else {
+        res.send('<html><body style="font-family: sans-serif; text-align: center; margin-top: 50px;"><h2>⏳ Waiting for WhatsApp client to start...</h2><script>setTimeout(() => location.reload(), 2000);</script></body></html>');
+    }
+});
+
+app.listen(port, () => {
+    console.log(`\n🌐 Authentication Web UI running at http://localhost:${port}`);
+});
 
 function getBrowserPath() {
     const paths = [
@@ -30,13 +69,18 @@ const client = new Client({
 });
 
 client.on('qr', (qr) => {
+    currentQR = qr; // Store for the webserver
     console.log('\n=========================================');
-    console.log('SCAN THIS QR CODE WITH YOUR WHATSAPP APP');
+    console.log(`SCAN THE QR CODE AT http://localhost:${port}`);
+    console.log('Or scan the terminal below:');
     console.log('=========================================\n');
-    qrcode.generate(qr, { small: true });
+    qrcodeTerminal.generate(qr, { small: true });
 });
 
 client.on('ready', async () => {
+    isAuthenticated = true; // Update webserver state
+    currentQR = '';
+
     if (client.__readyHandled) return;
     client.__readyHandled = true;
     console.log('\n✅ WhatsApp Bot is logged in and ready!');
