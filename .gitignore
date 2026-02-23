@@ -15,5 +15,6 @@ node_modules/
 whatsapp_auth/
 whatsapp_profile/
 whatsapp_data.json
+.wwebjs_cache/
 test.js
 test2.js

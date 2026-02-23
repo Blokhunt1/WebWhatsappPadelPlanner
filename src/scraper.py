@@ -14,7 +14,7 @@ async def is_slot_available(dt: datetime) -> bool:
     # Weekdays
     hour = dt.hour
     if hour < 9: # Anytime before 09:00
-        return True
+        return False
     if 9 <= hour < 19: # 09:00 to 17:00 (working hours) + 17:00-19:00 excluded
         return False
     # Anytime from 19:00 onwards
